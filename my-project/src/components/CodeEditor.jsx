@@ -30,7 +30,9 @@ export const CodeEditor = ({
   const [inputValue, setInputValue] = useState("");
   const inputResolverRef = useRef(null);
   const inputFieldRef = useRef(null);
+  
   const textareaRef = useRef(null);
+  const lineNumbersRef = useRef(null);
 
   useEffect(() => {
     if (savedCode !== null && savedCode !== undefined) {
@@ -39,6 +41,17 @@ export const CodeEditor = ({
       setCode(initialCode);
     }
   }, [savedCode, initialCode]);
+
+  // Auto-resize textarea height so it fits content without vertical desync scroll
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      const scrollH = textarea.scrollHeight;
+      const minH = 120;
+      textarea.style.height = `${Math.max(minH, scrollH)}px`;
+    }
+  }, [code]);
 
   // Focus input field when waiting for input
   useEffect(() => {
@@ -55,7 +68,14 @@ export const CodeEditor = ({
     }
   };
 
-  // Support Tab key indent
+  // Synchronize scrolling between textarea and line numbers (if scrolled)
+  const handleScroll = () => {
+    if (lineNumbersRef.current && textareaRef.current) {
+      lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  };
+
+  // Support Tab key indent (4 spaces)
   const handleKeyDown = (e) => {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -154,7 +174,6 @@ export const CodeEditor = ({
       setValidationResult(check);
 
       if (check.valid) {
-        // Trigger celebratory confetti!
         try {
           confetti({
             particleCount: 80,
@@ -170,14 +189,15 @@ export const CodeEditor = ({
     }
   };
 
-  // Calculate line numbers
-  const linesCount = code.split("\n").length;
-  const lineNumbers = Array.from({ length: Math.max(linesCount, 5) }, (_, i) => i + 1);
+  // Calculate line numbers matching exact lines of code
+  const codeLines = code.split("\n");
+  const linesCount = codeLines.length;
+  const lineNumbers = Array.from({ length: linesCount }, (_, i) => i + 1);
 
   return (
     <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-900 shadow-2xl flex flex-col my-4">
       {/* Editor Header */}
-      <div className="bg-slate-950/80 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
+      <div className="bg-slate-950/90 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           {/* Mac style window control dots */}
           <div className="flex items-center gap-1.5">
@@ -317,29 +337,36 @@ export const CodeEditor = ({
         </div>
       )}
 
-      {/* Code Textarea Area with Line Numbers */}
-      <div className="relative flex font-mono text-sm min-h-[160px] max-h-[360px] overflow-hidden bg-slate-950">
-        {/* Line Numbers column */}
-        <div className="select-none py-3 pl-3 pr-2 text-right text-slate-600 bg-slate-950 border-r border-slate-800/80 text-xs w-10 shrink-0">
+      {/* Code Textarea Area with Pixel-Perfect Line Numbers */}
+      <div className="relative flex font-mono bg-slate-950 overflow-x-auto max-h-[520px] overflow-y-auto">
+        {/* Line Numbers Column */}
+        <div
+          ref={lineNumbersRef}
+          aria-hidden="true"
+          className="select-none py-3 pl-3 pr-2.5 text-right text-slate-600 bg-slate-950/90 border-r border-slate-800/80 text-xs w-11 shrink-0 font-mono"
+        >
           {lineNumbers.map((num) => (
-            <div key={num} className="leading-6">
+            <div key={num} className="h-6 leading-6 text-slate-600">
               {num}
             </div>
           ))}
         </div>
 
-        {/* Actual Editor Textarea */}
-        <div className="relative flex-1 h-full">
+        {/* Textarea Input Editor */}
+        <div className="relative flex-1 min-w-0">
           <textarea
             ref={textareaRef}
             value={code}
             onChange={handleTextChange}
+            onScroll={handleScroll}
             onKeyDown={handleKeyDown}
             spellCheck="false"
             autoCapitalize="off"
             autoComplete="off"
-            className="w-full h-full min-h-[160px] p-3 font-mono text-sm leading-6 text-slate-100 bg-transparent resize-y focus:outline-none focus:ring-0 selection:bg-indigo-500/40"
+            wrap="off"
+            className="w-full py-3 pl-3 pr-4 font-mono text-sm leading-6 text-slate-100 bg-transparent resize-none overflow-x-auto focus:outline-none focus:ring-0 selection:bg-indigo-500/40 tab-size-4"
             placeholder="# ჩაწერეთ პითონის კოდი აქ..."
+            style={{ tabSize: 4 }}
           />
         </div>
       </div>
