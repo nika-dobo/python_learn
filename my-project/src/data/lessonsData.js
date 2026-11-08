@@ -1200,7 +1200,7 @@ print("დარჩენილი საწყობი:", inventory)`,
       {
         title: "მაგალითი 3: მულტი / ჩადგმული ლექსიკონი (Nested Dictionary)",
         code: `company = {
-    "emp1": {"name": "ნიკო", "salary": 2500, "dept": "IT"},
+    "emp1": {"name": "მარიამი", "salary": 2500, "dept": "IT"},
     "emp2": {"name": "თეკლა", "salary": 3000, "dept": "Design"}
 }
 
@@ -1305,7 +1305,7 @@ for item, price in products.items():
       },
       {
         title: "მაგალითი 2: .values() ციკლი და ფასების ჯამი",
-        code: `salaries = {"გიორგი": 2200, "ანა": 2800, "ლუკა": 1900, "ნიკო": 3100}
+        code: `salaries = {"გიორგი": 2200, "ანა": 2800, "ლუკა": 1900, "მარი": 3100}
 
 total_payroll = 0
 for salary in salaries.values():
