@@ -28,11 +28,11 @@ const MainContent = () => {
 
         <main className="flex-1 pb-16">
           {currentLesson.isQuiz ? (
-            <QuizView lesson={currentLesson} />
+            <QuizView key={currentLesson.id} lesson={currentLesson} />
           ) : currentLesson.isComplexPractice ? (
-            <ComplexPracticeView lesson={currentLesson} />
+            <ComplexPracticeView key={currentLesson.id} lesson={currentLesson} />
           ) : (
-            <LessonView lesson={currentLesson} />
+            <LessonView key={currentLesson.id} lesson={currentLesson} />
           )}
         </main>
       </div>

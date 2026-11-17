@@ -51,17 +51,17 @@ export const ComplexPracticeView = ({ lesson }) => {
         <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 font-semibold mb-2">
           <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
-            გაკვეთილი 9 • კომპლექსური პრაქტიკა
+            გაკვეთილი {lesson.id} • კომპლექსური პრაქტიკა
           </span>
           <span className="text-slate-400">• რეალური ქეისები</span>
         </div>
 
         <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-3">
-          რეალური ამოცანების გადაჭრა პითონით
+          {lesson.title}
         </h1>
 
         <p className="text-slate-300 text-sm md:text-base leading-relaxed">
-          აქ თავმოყრილია კომპლექსური, რეალურ სამყაროსთან მიახლოებული ამოცანები. გამოიყენეთ ყველა მიღებული ცოდნა: ცვლადები, პირობითი ოპერატორები (if/else), ციკლები (for/while) და სიები (List).
+          {lesson.subtitle}
         </p>
 
         <div className="mt-4 flex items-center gap-3 text-xs text-slate-400">

@@ -57,6 +57,11 @@ export const LessonView = ({ lesson }) => {
               <Clock className="w-3.5 h-3.5" />
               {lesson.duration}
             </span>
+            {lesson.badge && (
+              <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
+                {lesson.badge}
+              </span>
+            )}
             {isLessonComplete && (
               <span className="flex items-center gap-1 text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                 <CheckCircle2 className="w-3 h-3" />
@@ -130,6 +135,7 @@ export const LessonView = ({ lesson }) => {
                 {snippet.explanation}
               </p>
               <CodeEditor
+                key={`${lesson.id}_snippet_${idx}`}
                 initialCode={snippet.code}
                 fileName={`example_${idx + 1}.py`}
               />

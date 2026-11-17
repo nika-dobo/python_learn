@@ -13,12 +13,13 @@ import { useProgress } from "../context/ProgressContext";
 import { CodeEditor } from "./CodeEditor";
 
 export const QuizView = ({ lesson }) => {
-  const { quizScore, saveQuizResult, setActiveLessonId } = useProgress();
+  const { quizScores, saveQuizResult, setActiveLessonId, totalLessons } = useProgress();
+  const lessonQuizScore = quizScores?.[lesson.id] || null;
 
   // State for user answers
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [codeAnswersStatus, setCodeAnswersStatus] = useState({});
-  const [submitted, setSubmitted] = useState(Boolean(quizScore));
+  const [submitted, setSubmitted] = useState(Boolean(lessonQuizScore));
 
   const questions = lesson.quizQuestions || [];
 
@@ -53,7 +54,7 @@ export const QuizView = ({ lesson }) => {
       }
     });
 
-    saveQuizResult(score, total);
+    saveQuizResult(score, total, lesson.id);
     setSubmitted(true);
 
     try {
@@ -73,9 +74,10 @@ export const QuizView = ({ lesson }) => {
     setSubmitted(false);
   };
 
-  const currentScore = quizScore?.score ?? 0;
-  const currentTotal = quizScore?.total ?? questions.length;
-  const currentPercentage = quizScore?.percentage ?? 0;
+  const currentScore = lessonQuizScore?.score ?? 0;
+  const currentTotal = lessonQuizScore?.total ?? questions.length;
+  const currentPercentage = lessonQuizScore?.percentage ?? 0;
+  const hasNextLesson = lesson.id < totalLessons;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
@@ -84,21 +86,21 @@ export const QuizView = ({ lesson }) => {
         <div className="flex items-center gap-2 text-xs font-mono text-amber-400 font-semibold mb-2">
           <span className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 flex items-center gap-1.5">
             <Award className="w-3.5 h-3.5" />
-            გაკვეთილი 6 • შემაჯამებელი ქვიზი
+            გაკვეთილი {lesson.id} • შემაჯამებელი ქვიზი
           </span>
           <span className="text-slate-400">• {questions.length} შეკითხვა და სავარჯიშო</span>
         </div>
 
         <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-3">
-          პრაქტიკა და ცოდნის შემოწმება
+          {lesson.title}
         </h1>
 
         <p className="text-slate-300 text-sm md:text-base leading-relaxed">
-          შეაჯამეთ 1-5 გაკვეთილებში მიღებული ცოდნა (ცვლადები, input(), ოპერატორები, if/else და სიები). უპასუხეთ შეკითხვებს და შეასრულეთ კოდის სავარჯიშოები.
+          {lesson.subtitle}
         </p>
 
         {/* If already submitted / Score Card */}
-        {submitted && quizScore && (
+        {submitted && lessonQuizScore && (
           <div className="mt-6 p-5 rounded-xl bg-slate-950/80 border border-amber-500/40 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-2xl">
@@ -274,7 +276,9 @@ export const QuizView = ({ lesson }) => {
           </h4>
           <p className="text-xs text-slate-400 mt-0.5">
             {submitted
-              ? `შედეგი შენახულია. შეგიძლიათ გადახვიდეთ მე-7 გაკვეთილზე.`
+              ? hasNextLesson
+                ? `შედეგი შენახულია. შეგიძლიათ გადახვიდეთ მე-${lesson.id + 1} გაკვეთილზე.`
+                : "გილოცავთ! კურსის ფინალური ქვიზი წარმატებით შენახულია 🎉"
               : "დააჭირეთ ღილაკს პასუხების გასაგზავნად და შედეგის დასათვლელად."}
           </p>
         </div>
@@ -287,18 +291,18 @@ export const QuizView = ({ lesson }) => {
             <Sparkles className="w-4 h-4" />
             ქვიზის დასრულება და შეფასება
           </button>
-        ) : (
+        ) : hasNextLesson ? (
           <button
             onClick={() => {
-              setActiveLessonId(7);
+              setActiveLessonId(lesson.id + 1);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center justify-center gap-2"
           >
-            გადასვლა მე-7 გაკვეთილზე
+            გადასვლა მე-{lesson.id + 1} გაკვეთილზე
             <ArrowRight className="w-4 h-4" />
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );

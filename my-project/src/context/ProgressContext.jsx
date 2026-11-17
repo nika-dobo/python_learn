@@ -34,12 +34,17 @@ export const ProgressProvider = ({ children }) => {
     }
   });
 
-  const [quizScore, setQuizScore] = useState(() => {
+  const [quizScores, setQuizScores] = useState(() => {
     try {
-      const saved = localStorage.getItem(`${STORAGE_KEY}_quiz_score`);
-      return saved ? JSON.parse(saved) : null;
+      const savedMap = localStorage.getItem(`${STORAGE_KEY}_quiz_scores`);
+      if (savedMap) return JSON.parse(savedMap);
+      const legacy = localStorage.getItem(`${STORAGE_KEY}_quiz_score`);
+      if (legacy) {
+        return { 6: JSON.parse(legacy) };
+      }
+      return {};
     } catch {
-      return null;
+      return {};
     }
   });
 
@@ -79,15 +84,11 @@ export const ProgressProvider = ({ children }) => {
 
   useEffect(() => {
     try {
-      if (quizScore !== null) {
-        localStorage.setItem(`${STORAGE_KEY}_quiz_score`, JSON.stringify(quizScore));
-      } else {
-        localStorage.removeItem(`${STORAGE_KEY}_quiz_score`);
-      }
+      localStorage.setItem(`${STORAGE_KEY}_quiz_scores`, JSON.stringify(quizScores));
     } catch (e) {
-      console.error("Error saving quiz score:", e);
+      console.error("Error saving quiz scores:", e);
     }
-  }, [quizScore]);
+  }, [quizScores]);
 
   useEffect(() => {
     try {
@@ -125,17 +126,20 @@ export const ProgressProvider = ({ children }) => {
     setCompletedLessons((prev) => prev.filter((id) => id !== lessonId));
   };
 
-  const saveQuizResult = (score, total) => {
+  const saveQuizResult = (score, total, lessonId = 6) => {
     const resultObj = {
       score,
       total,
       percentage: Math.round((score / total) * 100),
       timestamp: new Date().toISOString(),
     };
-    setQuizScore(resultObj);
-    // Mark Lesson 6 as completed if score is >= 50%
+    setQuizScores((prev) => ({
+      ...prev,
+      [lessonId]: resultObj,
+    }));
+    // Mark quiz lesson as completed if score is >= 50%
     if (resultObj.percentage >= 50) {
-      markLessonCompleted(6);
+      markLessonCompleted(lessonId);
     }
   };
 
@@ -143,18 +147,22 @@ export const ProgressProvider = ({ children }) => {
     setCompletedLessons([]);
     setCompletedExercises({});
     setSavedCodes({});
-    setQuizScore(null);
+    setQuizScores({});
     setActiveLessonId(1);
     try {
       localStorage.removeItem(`${STORAGE_KEY}_completed_lessons`);
       localStorage.removeItem(`${STORAGE_KEY}_completed_exercises`);
       localStorage.removeItem(`${STORAGE_KEY}_saved_codes`);
       localStorage.removeItem(`${STORAGE_KEY}_quiz_score`);
+      localStorage.removeItem(`${STORAGE_KEY}_quiz_scores`);
       localStorage.removeItem(`${STORAGE_KEY}_active_lesson`);
     } catch (e) {
       console.error("Error clearing localStorage:", e);
     }
   };
+
+  // Backward-compatible summary quizScore (lesson 6 or first available)
+  const quizScore = quizScores[6] || Object.values(quizScores)[0] || null;
 
   // Progress Calculation
   const totalLessons = LESSONS_DATA.length;
@@ -168,6 +176,7 @@ export const ProgressProvider = ({ children }) => {
         completedExercises,
         savedCodes,
         quizScore,
+        quizScores,
         activeLessonId,
         setActiveLessonId,
         markExerciseCompleted,
