@@ -32,6 +32,13 @@ export const MODULE_2_LESSONS = [
           "continue — გამოტოვებს მიმდინარე იტერაციის დარჩენილ ნაწილს და გადადის შემდეგ იტერაციაზე.",
         ],
       },
+      {
+        heading: "for-else, while-else და Pattern Printing",
+        bullets: [
+          "ციკლის else ბლოკი — სრულდება მხოლოდ მაშინ, თუ ციკლი ბოლომდე გავიდა და არ შეწყვეტილა break-ით! ძალიან მოსახერხებელია ძებნისას ('ვერ მოიძებნა').",
+          "Pattern Printing — ჩადგმული ციკლების (Nested Loops) საშუალებით შეგვიძლია დავხატოთ სამკუთხედები და ცხრილები.",
+        ],
+      },
     ],
     codeSnippets: [
       {
@@ -63,6 +70,22 @@ print("სტარტი! 🚀")`,
         break     # ციკლის შეწყვეტა
     print(f"რიცხვი: {num}")`,
         explanation: "continue გამოტოვებს 3-ს, ხოლო break სრულად აჩერებს ციკლს 6-ზე.",
+      },
+      {
+        title: "მაგალითი 4: for-else და Pattern Printing (პირამიდა)",
+        code: `# 1. for-else ძებნისთვის
+nums = [2, 4, 6, 8]
+for n in nums:
+    if n == 5:
+        print("ნაპოვნია 5!")
+        break
+else:
+    print("5 სიაში ვერ მოიძებნა.")
+
+# 2. Pattern Printing
+for row in range(1, 5):
+    print("*" * row)`,
+        explanation: "else ბლოკი გაეშვა, რადგან break არ მოხდა. ჩადგმული ციკლებითა და '*' * row-თი კი მარტივად იხატება ფიგურები.",
       },
     ],
     exercises: [

@@ -31,4 +31,10 @@ export const MODULES_DATA = [
     subtitle: "try/except, datetime, JSON, API/Multithreading/PyQt5 გზამკვლევი და ფინალური ქვიზი",
     lessonIds: [25, 26, 27],
   },
+  {
+    id: 6,
+    title: "მოდული 6: ფუნქციური Python, რეკურსია და მეხსიერება",
+    subtitle: "lambda/map/filter/zip/all/any, რეკურსია, is vs ==, deepcopy, match-case და VS Code Setup",
+    lessonIds: [28, 29, 30],
+  },
 ];

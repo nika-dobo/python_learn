@@ -32,6 +32,9 @@ import {
   Wand2,
   ShieldAlert,
   Globe,
+  Cpu,
+  RefreshCw,
+  MemoryStick,
 } from "lucide-react";
 import { useProgress } from "../context/ProgressContext";
 import { LESSONS_DATA, MODULES_DATA } from "../data/lessonsData";
@@ -64,6 +67,9 @@ const getLessonIcon = (iconName) => {
     case "Wand2": return <Wand2 className="w-4 h-4" />;
     case "ShieldAlert": return <ShieldAlert className="w-4 h-4" />;
     case "Globe": return <Globe className="w-4 h-4" />;
+    case "Cpu": return <Cpu className="w-4 h-4" />;
+    case "RefreshCw": return <RefreshCw className="w-4 h-4" />;
+    case "MemoryStick": return <MemoryStick className="w-4 h-4" />;
     default: return <Code2 className="w-4 h-4" />;
   }
 };
